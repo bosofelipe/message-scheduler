@@ -1,16 +1,18 @@
 package com.luizalabs.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
+@Builder
 public class Message {
 
     @Id
@@ -18,7 +20,7 @@ public class Message {
     private Long id;
 
     @Column(nullable = false)
-    private Date data;
+    private LocalDateTime dataTime;
 
     @Column(nullable = false)
     private String content;
@@ -28,10 +30,11 @@ public class Message {
             foreignKey = @ForeignKey(name = "id"), nullable = false)
     private Requester requester;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private MessageStatus status;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ResourceType type;
+    private ResourceType resourceType;
 }
