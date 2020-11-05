@@ -1,7 +1,9 @@
 package com.luizalabs.controller;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 import com.google.common.collect.Lists;
@@ -26,17 +28,25 @@ public class MessageController {
 	@Autowired
 	private MessageService messageService;
 
-	@ApiPageable
-	@ApiOperation(value="List messages paginated", notes="")
-	@GetMapping(path = "/list", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE })
-	public List<String> list(Pageable pageable) {
-		return Lists.newArrayList();
-	}
-
-	@ApiPageable
 	@ApiOperation(value="Save schedule message", notes="")
 	@PostMapping(path = "/save", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE })
 	public ResponseEntity<MessageDTO> save(@RequestBody MessageDTO messageDTO) {
 		return new ResponseEntity<MessageDTO>( messageService.save(messageDTO), HttpStatus.OK);
+	}
+
+	@ApiOperation(value="Delete a message scheduled", notes="")
+	@DeleteMapping(path = "/delete/{messageId}", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE })
+	public Map<String, Boolean> delete(@PathVariable Long messageId) {
+		messageService.delete(messageId);
+		Map<String, Boolean> response = new HashMap<>();
+		response.put("deleted", Boolean.TRUE);
+		return response;
+	}
+
+	@ApiPageable
+	@ApiOperation(value="List messages paginated", notes="")
+	@GetMapping(path = "/list", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE })
+	public List<MessageDTO> list(Pageable pageable) {
+		return messageService.list(pageable);
 	}
 }

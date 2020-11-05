@@ -9,7 +9,7 @@ import java.util.Arrays;
 
 public enum MessageStatus {
     SCHEDULED("SCHEDULED"),
-    DELETED("DELETED");
+    SENT("SENT");
 
     private String name;
 

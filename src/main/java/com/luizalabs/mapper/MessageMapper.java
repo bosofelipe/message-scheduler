@@ -23,6 +23,6 @@ public class MessageMapper {
                 .content(message.getContent())
                 .dateTime(message.getDataTime())
                 .resourceType(message.getResourceType().name())
-                .status(message.getResourceType().name()).build();
+                .status(message.getStatus().name()).build();
     }
 }

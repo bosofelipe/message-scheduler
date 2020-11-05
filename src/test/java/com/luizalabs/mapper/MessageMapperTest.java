@@ -1,4 +1,4 @@
-package com.luizalabs.service.mapper;
+package com.luizalabs.mapper;
 
 import com.luizalabs.domain.Message;
 import com.luizalabs.domain.Requester;
