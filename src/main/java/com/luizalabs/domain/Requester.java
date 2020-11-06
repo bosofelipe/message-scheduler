@@ -1,5 +1,6 @@
 package com.luizalabs.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -19,6 +20,7 @@ public class Requester {
 
     private String name;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "requester", fetch = FetchType.LAZY)
     private List<Message> messages;
 }

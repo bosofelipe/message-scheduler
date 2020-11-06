@@ -8,9 +8,5 @@ os: linux
 dist: trusty
 jdk:
   - openjdk11
-install:
-  - gradle wrapper --gradle-version 4.0.1
-
 script:
-  - gradle build --scan -s
-  - gradle sonarqube
+  - ./gradlew clean test
