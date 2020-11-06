@@ -1,5 +1,10 @@
 language: java
-install: skip
+install: true
+addons:
+  sonarcloud:
+    organization: bosofelipe-github
+    token:
+      secure: 9fa95782aea30931b84cd302b7bafa9331a810d0
 
 os: linux
 dist: trusty
@@ -7,3 +12,4 @@ jdk: oraclejdk11
 
 script:
   - gradle build --scan -s
+  - gradle sonarqube
