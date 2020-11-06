@@ -1,7 +1,6 @@
 package com.luizalabs.controller;
 
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,7 +9,6 @@ import com.luizalabs.ApiPageable;
 import com.luizalabs.domain.Message;
 
 import com.luizalabs.dto.MessageDTO;
-import com.luizalabs.dto.Messages;
 import com.luizalabs.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
