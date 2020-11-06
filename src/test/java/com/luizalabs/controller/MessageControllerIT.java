@@ -2,25 +2,30 @@ package com.luizalabs.controller;
 
 import com.luizalabs.domain.Message;
 import com.luizalabs.domain.Requester;
+import com.luizalabs.domain.ResourceType;
 import com.luizalabs.dto.MessageDTO;
+import com.luizalabs.dto.Messages;
 import com.luizalabs.mapper.MessageMapper;
 import com.luizalabs.repository.MessageRepository;
 import com.luizalabs.repository.RequesterRepository;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@EnableSpringDataWebSupport
 public class MessageControllerIT {
 
     @Autowired
@@ -53,22 +58,56 @@ public class MessageControllerIT {
         Assertions.assertEquals(response.getStatusCode().value(), 500);
     }
 
+    @Disabled
     @Test
     @Order(3)
+    public void listMessages() throws Exception {
+        createMessagesAndRequester();
+
+        ResponseEntity<List<Message>> rateResponse =
+                rest.exchange("/api/message/list",
+                        HttpMethod.GET, null, new ParameterizedTypeReference<List<Message>>() {
+        });
+        Assertions.assertEquals(rateResponse.getBody().size(), 1);
+    }
+
+    @Test
+    @Order(4)
     public void deleteMessage() throws Exception {
-        createMessageAndRequester();
         Message messageToDelete = messageRepository.findAll().get(0);
         rest.delete("/api/message/delete/" + messageToDelete.getId());
         Optional<Message> messageDeleted = messageRepository.findById(messageToDelete.getId());
         Assertions.assertTrue(messageDeleted.isEmpty());
     }
 
-    public void createMessageAndRequester(){
+    public void createMessagesAndRequester(){
         Requester requester = requesterRepository.save(Requester.builder().name("Requester-1").build());
+
         messageRepository.save(MessageMapper.toMessage(
                 MessageDTO.builder().content("Aguardar chegada de novo integrante").requester("Resource-1")
                         .dateTime(LocalDateTime.now().plusDays(10)).status("SCHEDULED")
-                        .resourceType("SMS").build()
+                        .resourceType(ResourceType.EMAIL.name()).build()
+                , requester )
+        );
+
+        messageRepository.save(MessageMapper.toMessage(
+                MessageDTO.builder().content("Verificar equipamentos").requester("Resource-1")
+                        .dateTime(LocalDateTime.now().plusDays(10)).status("SCHEDULED")
+                        .resourceType(ResourceType.SMS.name()).build()
+                , requester )
+        );
+
+        messageRepository.save(MessageMapper.toMessage(
+                MessageDTO.builder().content("Analisar todas as atividades").requester("Resource-1")
+                        .dateTime(LocalDateTime.now().plusDays(10)).status("SCHEDULED")
+                        .resourceType(ResourceType.PUSH.name()).build()
+                , requester )
+        );
+
+        messageRepository.save(MessageMapper.toMessage(
+                MessageDTO.builder().content("Analisar todas as atividades").requester("Resource-1")
+                        .dateTime(LocalDateTime.now().plusDays(10)).status("SCHEDULED")
+                        .resourceType(ResourceType.WHATSAPP.name()).build()
                 , requester )
         );
     }

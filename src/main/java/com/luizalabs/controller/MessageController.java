@@ -1,6 +1,7 @@
 package com.luizalabs.controller;
 
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,9 +12,13 @@ import com.luizalabs.ApiPageable;
 import com.luizalabs.domain.Message;
 
 import com.luizalabs.dto.MessageDTO;
+import com.luizalabs.dto.Messages;
 import com.luizalabs.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +51,8 @@ public class MessageController {
 	@ApiPageable
 	@ApiOperation(value="List messages paginated", notes="")
 	@GetMapping(path = "/list", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE })
-	public List<MessageDTO> list(Pageable pageable) {
-		return messageService.list(pageable);
+	public ResponseEntity<Page<Message>> list(
+			@PageableDefault(size = 10, direction = Sort.Direction.DESC, sort = "id") Pageable pageable) {
+		return new ResponseEntity<Page<Message>>(messageService.list(pageable), HttpStatus.OK);
 	}
 }

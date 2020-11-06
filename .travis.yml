@@ -4,11 +4,11 @@ addons:
   sonarcloud:
     organization: bosofelipe-github
     token:
-      secure: 9fa95782aea30931b84cd302b7bafa9331a810d0
-
+      secure: 11f824a47e91797b8b394444d725aae5cd339bf7
 os: linux
 dist: trusty
-jdk: oraclejdk11
+jdk:
+  - openjdk11
 
 script:
   - gradle build --scan -s
