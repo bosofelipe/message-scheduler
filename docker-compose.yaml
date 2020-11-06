@@ -1,0 +1,14 @@
+version: '3'
+services:
+  docker-app:
+    image: messageschedulerapp:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - docker-postgres
+  docker-postgres:
+    image: postgres:10.4
+    environment:
+      - POSTGRES_DB=messagescheduler
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
