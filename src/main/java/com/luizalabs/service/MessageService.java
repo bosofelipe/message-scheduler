@@ -52,10 +52,7 @@ public class MessageService {
         messageRepository.delete(message);
     }
 
-    public List<MessageDTO> list(Pageable pageable) {
-        Page<Message> messages = messageRepository.findAll(pageable);
-        return messages.toList().parallelStream()
-                .map(message -> MessageMapper.toMessageDTO(message))
-                .collect(Collectors.toList());
+    public Page<Message> list(Pageable pageable) {
+        return messageRepository.findAll(pageable);
     }
 }
