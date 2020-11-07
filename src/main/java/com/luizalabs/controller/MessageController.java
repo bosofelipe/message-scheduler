@@ -1,20 +1,15 @@
 package com.luizalabs.controller;
 
-
-import java.util.HashMap;
 import java.util.Map;
 
 
 import com.luizalabs.ApiPageable;
-import com.luizalabs.domain.Message;
 
+import com.luizalabs.domain.MessageStatus;
 import com.luizalabs.dto.MessageDTO;
 import com.luizalabs.service.MessageService;
+import io.swagger.annotations.ApiImplicitParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,26 +24,28 @@ public class MessageController {
 	@Autowired
 	private MessageService messageService;
 
-	@ApiOperation(value="Save schedule message", notes="")
-	@PostMapping(path = "/save", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE })
-	public ResponseEntity<MessageDTO> save(@RequestBody MessageDTO messageDTO) {
+	@ApiOperation(value="Schedule a new message", notes="")
+	@PostMapping(path = "/schedule", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE })
+	public ResponseEntity<MessageDTO> schedule(@RequestBody MessageDTO messageDTO) {
 		return new ResponseEntity<MessageDTO>( messageService.save(messageDTO), HttpStatus.OK);
 	}
 
-	@ApiOperation(value="Delete a message scheduled", notes="")
+	@ApiOperation(value="Change a message status", notes="")
+	@PatchMapping(path = "/change/status/{messageId}/{status}", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE })
+	public MessageDTO changeMessageStatus(@PathVariable("messageId") Long messageId, @PathVariable MessageStatus messageStatus) {
+		return messageService.changeMessageStatus(messageId, messageStatus);
+	}
+
+	@ApiOperation(value="Delete a message", notes="")
 	@DeleteMapping(path = "/delete/{messageId}", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE })
 	public Map<String, Boolean> delete(@PathVariable Long messageId) {
-		messageService.delete(messageId);
-		Map<String, Boolean> response = new HashMap<>();
-		response.put("deleted", Boolean.TRUE);
-		return response;
+		return messageService.delete(messageId);
 	}
 
 	@ApiPageable
-	@ApiOperation(value="List messages paginated", notes="")
-	@GetMapping(path = "/list", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE })
-	public ResponseEntity<Page<Message>> list(
-			@PageableDefault(size = 10, direction = Sort.Direction.DESC, sort = "id") Pageable pageable) {
-		return new ResponseEntity<Page<Message>>(messageService.list(pageable), HttpStatus.OK);
+	@ApiOperation(value="Check message status", notes="")
+	@GetMapping(path = "/checkMessageStatus", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE })
+	public ResponseEntity<MessageStatus> status(@PathVariable("messageId") Long messageId) {
+		return new ResponseEntity<MessageStatus>(messageService.checkMessageStatus(messageId), HttpStatus.OK);
 	}
 }

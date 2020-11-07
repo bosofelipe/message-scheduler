@@ -14,7 +14,7 @@ public class MessageMapper {
                 .content(messageDTO.getContent())
                 .dataTime(messageDTO.getDateTime())
                 .resourceType(ResourceType.valueOf(messageDTO.getResourceType()))
-                .status(MessageStatus.SCHEDULED).build();
+                .status(MessageStatus.valueOf(messageDTO.getStatus())).build();
     }
 
     public static MessageDTO toMessageDTO(Message message){

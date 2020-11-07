@@ -8,8 +8,9 @@ import lombok.NoArgsConstructor;
 import java.util.Arrays;
 
 public enum MessageStatus {
+    CANCELED("CANCELED"),
     SCHEDULED("SCHEDULED"),
-    SENT("SENT");
+    FINISHED("FINISHED");
 
     private String name;
 

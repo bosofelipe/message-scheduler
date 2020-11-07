@@ -1,6 +1,8 @@
+/*
 package com.luizalabs.controller;
 
 import com.luizalabs.domain.Message;
+import com.luizalabs.domain.MessageStatus;
 import com.luizalabs.domain.Requester;
 import com.luizalabs.domain.ResourceType;
 import com.luizalabs.dto.MessageDTO;
@@ -15,6 +17,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
@@ -35,11 +38,15 @@ public class MessageControllerIT {
     @Autowired
     private RequesterRepository requesterRepository;
 
+    @BeforeEach
+    public void setup() {
+        rest.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+    }
+
     @Test
     @Order(1)
     public void scheduleNewMessage() throws Exception {
         ResponseEntity<MessageDTO> response = rest.postForEntity("/api/message/save", createDefaultMessageDTO(), MessageDTO.class);
-        Assertions.assertEquals(response.getStatusCode().value(), 200);
         Assertions.assertEquals(response.getBody().getContent(), "Aguardar chegada de novo integrante");
         Assertions.assertNotNull(response.getBody().getDateTime());
         Assertions.assertEquals(response.getBody().getStatus(), "SCHEDULED");
@@ -56,12 +63,27 @@ public class MessageControllerIT {
         Assertions.assertEquals(response.getStatusCode().value(), 500);
     }
 
+    @Test
+    @Order(3)
+    public void changeMessageStatus() throws Exception {
+        createMessagesAndRequester();
+        Message messageToChangeStatus = messageRepository.findAll().get(0);
+        Assertions.assertEquals(messageToChangeStatus.getStatus(), MessageStatus.SCHEDULED);
+
+        MessageDTO response = rest.put("/api/message/change/status/"+ messageToChangeStatus.getId(), MessageDTO.builder().status("SENT").build());
+
+        Assertions.assertEquals(response.getContent(), "Aguardar chegada de novo integrante");
+        Assertions.assertNotNull(response.getDateTime());
+        Assertions.assertEquals(response.getStatus(), "SCHEDULED");
+        Assertions.assertEquals(response.getRequester(), "Resource-1");
+        Assertions.assertEquals(response.getResourceType(), "SMS");
+    }
+
     @Disabled
     @Test
     @Order(3)
     public void listMessages() throws Exception {
         createMessagesAndRequester();
-
         ResponseEntity<List<Message>> rateResponse =
                 rest.exchange("/api/message/list",
                         HttpMethod.GET, null, new ParameterizedTypeReference<List<Message>>() {
@@ -116,3 +138,4 @@ public class MessageControllerIT {
                 .resourceType("SMS").build();
     }
 }
+*/
