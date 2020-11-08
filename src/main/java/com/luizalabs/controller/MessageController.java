@@ -1,27 +1,21 @@
 package com.luizalabs.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
-
 import com.luizalabs.ApiPageable;
-
 import com.luizalabs.domain.MessageStatus;
 import com.luizalabs.dto.MessageDTO;
 import com.luizalabs.service.MessageService;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ExampleProperty;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.annotations.ApiOperation;
 
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @RestController

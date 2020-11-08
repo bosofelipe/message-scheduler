@@ -13,7 +13,10 @@ import com.luizalabs.repository.RequesterRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
+import org.mockito.Spy;
+import org.mockito.InjectMocks;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
 
 
 import java.time.LocalDateTime;
