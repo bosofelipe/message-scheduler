@@ -27,8 +27,8 @@ public class Swagger2 extends WebMvcConfigurationSupport {
 
 	private ApiInfo metaData() {
 		return new ApiInfoBuilder()
-				.title("API para agendamento de envio de mensagens")
-				.description("\"Agenda mensagens para diferentes tipos de recursos\"")
+				.title("API for message scheduler")
+				.description("Schedule messages for different types of applications")
 				.version("1.0.0")
 				.license("GNU AFFERO GENERAL PUBLIC LICENSE Version 3.0")
 				.licenseUrl("https://www.gnu.org/licenses/\"")

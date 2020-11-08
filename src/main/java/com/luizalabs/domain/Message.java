@@ -3,6 +3,8 @@ package com.luizalabs.domain;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -36,5 +38,5 @@ public class Message {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ResourceType resourceType;
+    private CommunicationType comunicationType;
 }

@@ -1,23 +1,24 @@
-/*
 package com.luizalabs.controller;
 
+import com.luizalabs.domain.CommunicationType;
 import com.luizalabs.domain.Message;
 import com.luizalabs.domain.MessageStatus;
 import com.luizalabs.domain.Requester;
-import com.luizalabs.domain.ResourceType;
 import com.luizalabs.dto.MessageDTO;
 import com.luizalabs.mapper.MessageMapper;
 import com.luizalabs.repository.MessageRepository;
 import com.luizalabs.repository.RequesterRepository;
-import org.junit.jupiter.api.*;
+import org.aspectj.lang.annotation.After;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
@@ -38,20 +39,15 @@ public class MessageControllerIT {
     @Autowired
     private RequesterRepository requesterRepository;
 
-    @BeforeEach
-    public void setup() {
-        rest.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-    }
-
     @Test
     @Order(1)
     public void scheduleNewMessage() throws Exception {
-        ResponseEntity<MessageDTO> response = rest.postForEntity("/api/message/save", createDefaultMessageDTO(), MessageDTO.class);
+        ResponseEntity<MessageDTO> response = rest.postForEntity("/api/message/schedule", createDefaultMessageDTO(), MessageDTO.class);
         Assertions.assertEquals(response.getBody().getContent(), "Aguardar chegada de novo integrante");
         Assertions.assertNotNull(response.getBody().getDateTime());
         Assertions.assertEquals(response.getBody().getStatus(), "SCHEDULED");
         Assertions.assertEquals(response.getBody().getRequester(), "Resource-1");
-        Assertions.assertEquals(response.getBody().getResourceType(), "SMS");
+        Assertions.assertEquals(response.getBody().getCommunicationType(), "SMS");
     }
 
     @Test
@@ -59,43 +55,97 @@ public class MessageControllerIT {
     public void errorOnScheduleMessageNullContent() throws Exception {
         MessageDTO messageDTO = createDefaultMessageDTO();
         messageDTO.setContent(null);
-        ResponseEntity<MessageDTO> response = rest.postForEntity("/api/message/save", messageDTO, MessageDTO.class);
-        Assertions.assertEquals(response.getStatusCode().value(), 500);
+        ResponseEntity<MessageDTO> response = rest.postForEntity("/api/message/schedule", messageDTO, MessageDTO.class);
+        Assertions.assertEquals(response.getStatusCode().value(), 400);
+        Assertions.assertEquals("Message content cannot be empty!", response.getBody().getContent());
     }
 
     @Test
     @Order(3)
+    public void errorOnScheduleInvalidCommunicationType() throws Exception {
+        MessageDTO messageDTO = createDefaultMessageDTO();
+        messageDTO.setCommunicationType("MOTOBOY");
+        ResponseEntity<MessageDTO> response = rest.postForEntity("/api/message/schedule", messageDTO, MessageDTO.class);
+        Assertions.assertEquals(response.getStatusCode().value(), 500);
+    }
+
+    @Test
+    @Order(4)
+    public void errorOnScheduleInvalidDate() throws Exception {
+        MessageDTO messageDTO = createDefaultMessageDTO();
+        messageDTO.setDateTime(LocalDateTime.now().minusDays(20));
+        ResponseEntity<MessageDTO> response = rest.postForEntity("/api/message/schedule", messageDTO, MessageDTO.class);
+        Assertions.assertEquals(response.getStatusCode().value(), 500);
+    }
+
+    @Test
+    @Order(4)
+    public void errorOnScheduleInvalidStatus() throws Exception {
+        MessageDTO messageDTO = createDefaultMessageDTO();
+        messageDTO.setStatus("ILLEGAL");
+        ResponseEntity<MessageDTO> response = rest.postForEntity("/api/message/schedule", messageDTO, MessageDTO.class);
+        Assertions.assertEquals(response.getStatusCode().value(), 500);
+    }
+
+    @Test
+    @Order(5)
     public void changeMessageStatus() throws Exception {
         createMessagesAndRequester();
         Message messageToChangeStatus = messageRepository.findAll().get(0);
         Assertions.assertEquals(messageToChangeStatus.getStatus(), MessageStatus.SCHEDULED);
 
-        MessageDTO response = rest.put("/api/message/change/status/"+ messageToChangeStatus.getId(), MessageDTO.builder().status("SENT").build());
-
-        Assertions.assertEquals(response.getContent(), "Aguardar chegada de novo integrante");
-        Assertions.assertNotNull(response.getDateTime());
-        Assertions.assertEquals(response.getStatus(), "SCHEDULED");
-        Assertions.assertEquals(response.getRequester(), "Resource-1");
-        Assertions.assertEquals(response.getResourceType(), "SMS");
+        ResponseEntity<MessageDTO> response = rest.exchange("/api/message/"+messageToChangeStatus.getId()+"/change/status/FINISHED", HttpMethod.PUT, null, MessageDTO.class);
+        Assertions.assertEquals(response.getBody().getStatus(), "FINISHED");
     }
 
-    @Disabled
     @Test
-    @Order(3)
-    public void listMessages() throws Exception {
+    @Order(6)
+    public void changeMessage() throws Exception {
         createMessagesAndRequester();
-        ResponseEntity<List<Message>> rateResponse =
-                rest.exchange("/api/message/list",
-                        HttpMethod.GET, null, new ParameterizedTypeReference<List<Message>>() {
-        });
-        Assertions.assertEquals(rateResponse.getBody().size(), 1);
+        Message messageToChangeStatus = messageRepository.findAll().get(0);
+        Assertions.assertEquals(messageToChangeStatus.getStatus(), MessageStatus.SCHEDULED);
+
+        MessageDTO updatedMessageDTO = MessageDTO.builder().content("Alteração de cadastro")
+                .status("FINISHED").communicationType("EMAIL").dateTime(LocalDateTime.now().plusHours(40))
+                .requester("Novo")
+                .build();
+
+        rest.put("/api/message/"+messageToChangeStatus.getId()+"/change", updatedMessageDTO, MessageDTO.class);
+
+        Optional<Message> updatedMessage = messageRepository.findById(messageToChangeStatus.getId());
+
+        Assertions.assertEquals(updatedMessage.get().getContent(), "Alteração de cadastro");
+        Assertions.assertEquals(updatedMessage.get().getStatus(), MessageStatus.FINISHED);
+        Assertions.assertEquals(updatedMessage.get().getComunicationType(), CommunicationType.EMAIL);
+        Assertions.assertEquals(updatedMessage.get().getRequester().getName(), "Novo");
+        Assertions.assertNotNull(updatedMessage.get().getDataTime());
     }
 
     @Test
-    @Order(4)
+    @Order(6)
+    public void checkMessageStatus() throws Exception {
+        createMessagesAndRequester();
+        List<Message> messages = messageRepository.findAll();
+
+        ResponseEntity<MessageStatus> response = rest.getForEntity("/api/message/"+messages.get(0).getId()+"/check/status", MessageStatus.class);
+        Assertions.assertEquals(response.getBody().name(), "SCHEDULED");
+
+        response = rest.getForEntity("/api/message/"+messages.get(1).getId()+"/check/status", MessageStatus.class);
+        Assertions.assertEquals(response.getBody().name(), "FINISHED");
+
+        response = rest.getForEntity("/api/message/"+messages.get(2).getId()+"/check/status", MessageStatus.class);
+        Assertions.assertEquals(response.getBody().name(), "CANCELED");
+
+        response = rest.getForEntity("/api/message/"+messages.get(3).getId()+"/check/status", MessageStatus.class);
+        Assertions.assertEquals(response.getBody().name(), "SCHEDULED");
+    }
+
+    @Test
+    @Order(5)
     public void deleteMessage() throws Exception {
+        createMessagesAndRequester();
         Message messageToDelete = messageRepository.findAll().get(0);
-        rest.delete("/api/message/delete/" + messageToDelete.getId());
+        rest.delete("/api/message/"+messageToDelete.getId()+ "/delete");
         Optional<Message> messageDeleted = messageRepository.findById(messageToDelete.getId());
         Assertions.assertTrue(messageDeleted.isEmpty());
     }
@@ -104,38 +154,43 @@ public class MessageControllerIT {
         Requester requester = requesterRepository.save(Requester.builder().name("Requester-1").build());
 
         messageRepository.save(MessageMapper.toMessage(
-                MessageDTO.builder().content("Aguardar chegada de novo integrante").requester("Resource-1")
+                MessageDTO.builder().content("Aguardar chegada de novo integrante").requester("Resource-30")
                         .dateTime(LocalDateTime.now().plusDays(10)).status("SCHEDULED")
-                        .resourceType(ResourceType.EMAIL.name()).build()
+                        .communicationType(CommunicationType.EMAIL.name()).build()
                 , requester )
         );
 
         messageRepository.save(MessageMapper.toMessage(
-                MessageDTO.builder().content("Verificar equipamentos").requester("Resource-1")
-                        .dateTime(LocalDateTime.now().plusDays(10)).status("SCHEDULED")
-                        .resourceType(ResourceType.SMS.name()).build()
+                MessageDTO.builder().content("Dados incorretos do contato").requester("Resource-10")
+                        .dateTime(LocalDateTime.now().plusDays(10)).status("FINISHED")
+                        .communicationType(CommunicationType.SMS.name()).build()
                 , requester )
         );
 
         messageRepository.save(MessageMapper.toMessage(
-                MessageDTO.builder().content("Analisar todas as atividades").requester("Resource-1")
-                        .dateTime(LocalDateTime.now().plusDays(10)).status("SCHEDULED")
-                        .resourceType(ResourceType.PUSH.name()).build()
+                MessageDTO.builder().content("Novo produto para entrega").requester("Resource-23")
+                        .dateTime(LocalDateTime.now().plusDays(10)).status("CANCELED")
+                        .communicationType(CommunicationType.PUSH.name()).build()
                 , requester )
         );
 
         messageRepository.save(MessageMapper.toMessage(
-                MessageDTO.builder().content("Analisar todas as atividades").requester("Resource-1")
+                MessageDTO.builder().content("Teste de envio").requester("Resource-42")
                         .dateTime(LocalDateTime.now().plusDays(10)).status("SCHEDULED")
-                        .resourceType(ResourceType.WHATSAPP.name()).build()
+                        .communicationType(CommunicationType.WHATSAPP.name()).build()
                 , requester )
         );
+    }
+
+    @AfterEach
+    public void tearDown(){
+        messageRepository.deleteAll();
+        requesterRepository.deleteAll();
     }
 
     public MessageDTO createDefaultMessageDTO(){
         return MessageDTO.builder().content("Aguardar chegada de novo integrante").requester("Resource-1")
                 .dateTime(LocalDateTime.now().plusDays(10)).status("SCHEDULED")
-                .resourceType("SMS").build();
+                .communicationType("SMS").build();
     }
 }
-*/

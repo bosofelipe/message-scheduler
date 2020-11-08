@@ -11,14 +11,12 @@ import com.luizalabs.repository.MessageRepository;
 import com.luizalabs.repository.RequesterRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -33,22 +31,13 @@ public class MessageService {
         if(LocalDateTime.now().isAfter(messageDTO.getDateTime())){
             throw new InvalidScheduleDateException("The message's scheduling date must be greater than the current date!");
         }
-
-        Optional<Requester> requesterObj = requesterRepository.findByName(messageDTO.getRequester());
-        Requester requester = null;
-
-        if(requesterObj.isEmpty()){
-            requester = requesterRepository.saveAndFlush(Requester.builder().name(messageDTO.getRequester()).build());
-        }else{
-            requester = requesterObj.get();
-        }
-
+        Requester requester = findOrCreateRequester(messageDTO.getRequester());
         Message message = MessageMapper.toMessage(messageDTO, requester);
         return MessageMapper.toMessageDTO(messageRepository.save(message));
     }
 
     public MessageDTO changeMessageStatus( Long messageId, MessageStatus messageStatus) {
-        Message message = messageRepository.findByIdAndStatus(messageId, MessageStatus.SCHEDULED)
+        Message message = messageRepository.findById(messageId)
                 .orElseThrow(() -> new MessageNotFoundException(messageId.toString()));
         message.setStatus(messageStatus);
 
@@ -56,7 +45,7 @@ public class MessageService {
     }
 
     public Map<String, Boolean> delete(Long messageId) {
-        Message message = messageRepository.findByIdAndStatus(messageId, MessageStatus.SCHEDULED)
+        Message message = messageRepository.findById(messageId)
                 .orElseThrow(() -> new MessageNotFoundException(messageId.toString()));
         messageRepository.delete(message);
 
@@ -70,5 +59,30 @@ public class MessageService {
         Message message = messageRepository.findById(messageId)
                 .orElseThrow(() -> new MessageNotFoundException(messageId.toString()));
         return message.getStatus();
+    }
+
+    public MessageDTO change(Long messageId, MessageDTO messageDTO) {
+        Message message = messageRepository.findById(messageId)
+                .orElseThrow(() -> new MessageNotFoundException(messageId.toString()));
+        Requester requester = findOrCreateRequester(messageDTO.getRequester());
+
+        Message updatedMessage = MessageMapper.toMessage(messageDTO, requester);
+        updatedMessage.setId(messageId);
+
+        messageRepository.save(updatedMessage);
+
+        return MessageMapper.toMessageDTO(updatedMessage);
+    }
+
+    private Requester findOrCreateRequester(String requesterName) {
+        Optional<Requester> requesterObj = requesterRepository.findByName(requesterName);
+        Requester requester = null;
+
+        if(requesterObj.isEmpty()){
+            requester = requesterRepository.saveAndFlush(Requester.builder().name(requesterName).build());
+        }else{
+            requester = requesterObj.get();
+        }
+        return requester;
     }
 }

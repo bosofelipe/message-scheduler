@@ -3,7 +3,7 @@ package com.luizalabs.mapper;
 import com.luizalabs.domain.Message;
 import com.luizalabs.domain.MessageStatus;
 import com.luizalabs.domain.Requester;
-import com.luizalabs.domain.ResourceType;
+import com.luizalabs.domain.CommunicationType;
 import com.luizalabs.dto.MessageDTO;
 
 public class MessageMapper {
@@ -13,7 +13,7 @@ public class MessageMapper {
                 .requester(requester)
                 .content(messageDTO.getContent())
                 .dataTime(messageDTO.getDateTime())
-                .resourceType(ResourceType.valueOf(messageDTO.getResourceType()))
+                .comunicationType(CommunicationType.valueOf(messageDTO.getCommunicationType()))
                 .status(MessageStatus.valueOf(messageDTO.getStatus())).build();
     }
 
@@ -22,7 +22,8 @@ public class MessageMapper {
                 .requester(message.getRequester().getName())
                 .content(message.getContent())
                 .dateTime(message.getDataTime())
-                .resourceType(message.getResourceType().name())
+                .id(message.getId())
+                .communicationType(message.getComunicationType().name())
                 .status(message.getStatus().name()).build();
     }
 }

@@ -1,9 +1,9 @@
 package com.luizalabs.service;
 
+import com.luizalabs.domain.CommunicationType;
 import com.luizalabs.domain.Message;
 import com.luizalabs.domain.MessageStatus;
 import com.luizalabs.domain.Requester;
-import com.luizalabs.domain.ResourceType;
 import com.luizalabs.dto.MessageDTO;
 import com.luizalabs.exception.InvalidScheduleDateException;
 import com.luizalabs.exception.MessageNotFoundException;
@@ -42,7 +42,7 @@ public class MessageServiceTest {
         MessageDTO newMessage = MessageDTO.builder().content("Nova compra feita no app MAGALU")
                 .dateTime(messageDate)
                 .status("SCHEDULED")
-                .requester("UsuarioXYZ").resourceType("SMS")
+                .requester("UsuarioXYZ").communicationType("SMS")
                 .build();
 
         Requester requester = Requester.builder()
@@ -58,7 +58,7 @@ public class MessageServiceTest {
 
         Assertions.assertEquals(MessageStatus.SCHEDULED.name(), savedMessage.getStatus());
         Assertions.assertEquals("Nova compra feita no app MAGALU", savedMessage.getContent());
-        Assertions.assertEquals(ResourceType.SMS.name(), savedMessage.getResourceType());
+        Assertions.assertEquals(CommunicationType.SMS.name(), savedMessage.getCommunicationType());
         Assertions.assertEquals("UsuarioXYZ", savedMessage.getRequester());
     }
 
@@ -68,7 +68,7 @@ public class MessageServiceTest {
         MessageDTO newMessage = MessageDTO.builder().content("Nova compra feita no app MAGALU")
                 .dateTime(messageDate)
                 .status("SCHEDULED")
-                .requester("UsuarioXYZ").resourceType("SMS")
+                .requester("UsuarioXYZ").communicationType("SMS")
                 .build();
 
         Requester requester = Requester.builder()
@@ -84,7 +84,7 @@ public class MessageServiceTest {
 
         Assertions.assertEquals(MessageStatus.SCHEDULED.name(), savedMessage.getStatus());
         Assertions.assertEquals("Nova compra feita no app MAGALU", savedMessage.getContent());
-        Assertions.assertEquals(ResourceType.SMS.name(), savedMessage.getResourceType());
+        Assertions.assertEquals(CommunicationType.SMS.name(), savedMessage.getCommunicationType());
         Assertions.assertEquals("UsuarioXYZ", savedMessage.getRequester());
     }
 
@@ -94,7 +94,7 @@ public class MessageServiceTest {
         MessageDTO newMessage = MessageDTO.builder().content("Nova compra feita no app MAGALU")
                 .dateTime(messageDate)
                 .status("SCHEDULED")
-                .requester("UsuarioXYZ").resourceType("SMS")
+                .requester("UsuarioXYZ").communicationType("SMS")
                 .build();
 
         Requester requester = Requester.builder()
@@ -118,7 +118,7 @@ public class MessageServiceTest {
         MessageDTO newMessage = MessageDTO.builder().content("Aviso de recebimento de produto")
                 .dateTime(messageDate)
                 .status("SCHEDULED")
-                .requester("UsuarioXYZ").resourceType("EMAIL")
+                .requester("UsuarioXYZ").communicationType("EMAIL")
                 .build();
 
         Requester requester = Requester.builder()
@@ -127,13 +127,13 @@ public class MessageServiceTest {
 
         Message message = MessageMapper.toMessage(newMessage, requester);
 
-        Mockito.when(messageRepository.findByIdAndStatus(30L, MessageStatus.SCHEDULED)).thenReturn(Optional.of(message));
+        Mockito.when(messageRepository.findById(30L)).thenReturn(Optional.of(message));
 
         MessageDTO savedMessage = messageService.changeMessageStatus(30L, MessageStatus.FINISHED);
 
         Assertions.assertEquals(MessageStatus.FINISHED.name(), savedMessage.getStatus());
         Assertions.assertEquals("Aviso de recebimento de produto", savedMessage.getContent());
-        Assertions.assertEquals(ResourceType.EMAIL.name(), savedMessage.getResourceType());
+        Assertions.assertEquals(CommunicationType.EMAIL.name(), savedMessage.getCommunicationType());
         Assertions.assertEquals("UsuarioXYZ", savedMessage.getRequester() );
     }
 
@@ -143,7 +143,7 @@ public class MessageServiceTest {
         MessageDTO newMessage = MessageDTO.builder().content("Aviso de recebimento de produto")
                 .dateTime(messageDate)
                 .status("SCHEDULED")
-                .requester("UsuarioXYZ").resourceType("EMAIL")
+                .requester("UsuarioXYZ").communicationType("EMAIL")
                 .build();
 
         Requester requester = Requester.builder()
@@ -166,7 +166,7 @@ public class MessageServiceTest {
         MessageDTO newMessage = MessageDTO.builder().content("Aviso de recebimento de produto")
                 .dateTime(messageDate)
                 .status("SCHEDULED")
-                .requester("UsuarioXYZ").resourceType("EMAIL")
+                .requester("UsuarioXYZ").communicationType("EMAIL")
                 .build();
 
         Requester requester = Requester.builder()
@@ -175,7 +175,7 @@ public class MessageServiceTest {
 
         Message message = MessageMapper.toMessage(newMessage, requester);
 
-        Mockito.when(messageRepository.findByIdAndStatus(1000L, MessageStatus.SCHEDULED)).thenReturn(Optional.of(message));
+        Mockito.when(messageRepository.findById(1000L)).thenReturn(Optional.of(message));
 
         Map<String, Boolean> messageDeleted = messageService.delete(1000L);
 
@@ -188,7 +188,7 @@ public class MessageServiceTest {
         MessageDTO newMessage = MessageDTO.builder().content("Aviso de recebimento de produto")
                 .dateTime(messageDate)
                 .status("SCHEDULED")
-                .requester("UsuarioXYZ").resourceType("EMAIL")
+                .requester("UsuarioXYZ").communicationType("EMAIL")
                 .build();
 
         Requester requester = Requester.builder()
@@ -210,7 +210,7 @@ public class MessageServiceTest {
         LocalDateTime messageDate = LocalDateTime.now().plusDays(2);
         MessageDTO newMessage = MessageDTO.builder().content("Aviso de produto extraviado")
                 .dateTime(messageDate).status("FINISHED")
-                .requester("UsuarioMPQ").resourceType("PUSH")
+                .requester("UsuarioMPQ").communicationType("PUSH")
                 .build();
 
         Requester requester = Requester.builder()
@@ -220,7 +220,6 @@ public class MessageServiceTest {
         Message message = MessageMapper.toMessage(newMessage, requester);
 
         Mockito.when(messageRepository.findById(1000L)).thenReturn(Optional.of(message));
-
         Assertions.assertEquals(MessageStatus.FINISHED, messageService.checkMessageStatus(1000L));
     }
 
@@ -230,7 +229,7 @@ public class MessageServiceTest {
         MessageDTO newMessage = MessageDTO.builder().content("Aviso de produto extraviado")
                 .dateTime(messageDate)
                 .status("FINISHED")
-                .requester("UsuarioMPQ").resourceType("EMAIL")
+                .requester("UsuarioMPQ").communicationType("EMAIL")
                 .build();
 
         Requester requester = Requester.builder()
