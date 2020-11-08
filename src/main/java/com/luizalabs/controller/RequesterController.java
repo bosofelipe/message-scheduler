@@ -1,7 +1,9 @@
 package com.luizalabs.controller;
 
+import com.luizalabs.ApiPageable;
 import com.luizalabs.domain.Requester;
 import com.luizalabs.repository.RequesterRepository;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,10 +30,12 @@ public class RequesterController {
 
     @Transactional
     @GetMapping("/list")
+    @ApiPageable
+    @ApiOperation(value="List requesters", notes="List requesters in paginated strategy")
     public ResponseEntity<Map<String, Object>> listRequesters(
             @RequestParam(required = false) String title,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "3") int size
+            @RequestParam(defaultValue = "10") int size
     ) {
         try {
             List<Requester> requesters = new ArrayList<>();

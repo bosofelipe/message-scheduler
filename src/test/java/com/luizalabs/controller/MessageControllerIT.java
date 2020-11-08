@@ -8,7 +8,6 @@ import com.luizalabs.dto.MessageDTO;
 import com.luizalabs.mapper.MessageMapper;
 import com.luizalabs.repository.MessageRepository;
 import com.luizalabs.repository.RequesterRepository;
-import org.aspectj.lang.annotation.After;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Order;
@@ -150,7 +149,7 @@ public class MessageControllerIT {
         Assertions.assertTrue(messageDeleted.isEmpty());
     }
 
-    public void createMessagesAndRequester(){
+    private void createMessagesAndRequester(){
         Requester requester = requesterRepository.save(Requester.builder().name("Requester-1").build());
 
         messageRepository.save(MessageMapper.toMessage(
@@ -183,12 +182,12 @@ public class MessageControllerIT {
     }
 
     @AfterEach
-    public void tearDown(){
+    private void tearDown(){
         messageRepository.deleteAll();
         requesterRepository.deleteAll();
     }
 
-    public MessageDTO createDefaultMessageDTO(){
+    private MessageDTO createDefaultMessageDTO(){
         return MessageDTO.builder().content("Aguardar chegada de novo integrante").requester("Resource-1")
                 .dateTime(LocalDateTime.now().plusDays(10)).status("SCHEDULED")
                 .communicationType("SMS").build();

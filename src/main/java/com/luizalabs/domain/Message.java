@@ -2,11 +2,18 @@ package com.luizalabs.domain;
 
 import lombok.*;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import javax.persistence.Id;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Column;
+import javax.persistence.ManyToOne;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
+import javax.persistence.Enumerated;
+import javax.persistence.EnumType;
+import javax.persistence.GenerationType;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @EqualsAndHashCode
