@@ -7,13 +7,13 @@ API Java para agendamento de envio de mensagens
 ##### Pré requisitos
 Para iniciar a aplicação é necessário a instalação de algumas ferramentas
 - Git:
-    https://git-scm.com/book/en/v2/Getting-Started-Installing-Git/
+    https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
 - Gradle :
     https://github.com/gradle/gradle/blob/master/README.md
 - Docker :
     https://docs.docker.com/engine/install
 - Docker compose:
-    https://docs.docker.com/compose/install/
+    https://docs.docker.com/compose/install
     
 ##### Instalação e configurações de ambiente        
 
@@ -28,7 +28,7 @@ Para iniciar a aplicação é necessário a instalação de algumas ferramentas
 
 #### Postman
 Os endpoints da API foram disponibilizados como collection do POSTMAN
--Baixar `Postman`
+-Baixar `https://github.com/bosofelipe/message-scheduler/blob/main/src/test/postman/message-scheduler.postman_collection.json` e fazer o import ao postman
 
 ##### Tecnologias utilizadas
 - [Java](https://www.oracle.com/br/java/) Java 11
