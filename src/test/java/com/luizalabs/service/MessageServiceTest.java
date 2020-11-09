@@ -254,19 +254,6 @@ public class MessageServiceTest {
 
     @Test
     public void messageNotFoundOnCheckStatus(){
-        LocalDateTime messageDate = LocalDateTime.now().plusDays(2);
-        MessageDTO newMessage = MessageDTO.builder().content("Aviso de produto extraviado")
-                .dateTime(messageDate)
-                .status("FINISHED")
-                .requester("UsuarioMPQ").communicationType("EMAIL")
-                .build();
-
-        Requester requester = Requester.builder()
-                .id(23L)
-                .name("UsuarioMPQ").build();
-
-        Message message = MessageMapper.toMessage(newMessage, requester);
-
         Mockito.when(messageRepository.findById(4400L)).thenReturn(Optional.empty());
 
         Throwable exceptionThatWasThrown = Assertions.assertThrows(MessageNotFoundException.class, () -> {
