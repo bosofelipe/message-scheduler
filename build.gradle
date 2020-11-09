@@ -19,14 +19,14 @@ dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-web')
 	implementation('org.springframework.boot:spring-boot-starter-validation')
 	implementation("com.google.guava:guava:30.0-jre")
-	compile('io.springfox:springfox-swagger2:2.9.2')
-	compile('io.springfox:springfox-swagger-ui:2.9.2')
-	compile('org.apache.httpcomponents:httpclient:4.4.1')
+	implementation('io.springfox:springfox-swagger2:2.9.2')
+	implementation('io.springfox:springfox-swagger-ui:2.9.2')
+	implementation('org.apache.httpcomponents:httpclient:4.4.1')
+	implementation("javax.validation:validation-api:2.0.0.Final")
 	annotationProcessor('org.projectlombok:lombok')
 	compileOnly('org.projectlombok:lombok')
 	runtimeOnly('org.postgresql:postgresql')
 	runtimeOnly('com.h2database:h2')
-	compile("javax.validation:validation-api:2.0.0.Final")
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}

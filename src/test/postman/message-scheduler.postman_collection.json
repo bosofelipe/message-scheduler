@@ -1,0 +1,161 @@
+{
+	"variables": [],
+	"info": {
+		"name": "message-scheduler",
+		"_postman_id": "560accc2-5d46-1f66-d160-33bcc9720bd6",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "message",
+			"description": "",
+			"item": [
+				{
+					"name": "Save new Message",
+					"request": {
+						"url": "http://localhost:8080/message-scheduler/api/message/schedule",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"requester\": \"Usuário APT\",\n  \"dateTime\": \"2035-10-05 12:30:00\",\n  \"content\": \"Nova nota fiscal emitida\",\n  \"resourceType\": \"SMS\",\n  \"status\": \"SCHEDULED\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Change message properties",
+					"request": {
+						"url": "http://localhost:8080/message-scheduler/api/message/2/change",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"requester\": \"Usuário APT\",\n    \"dateTime\": \"2035-10-05 12:30:00\",\n    \"content\": \"Nova nota fiscal emitida com falha\",\n    \"resourceType\": \"SMS\",\n    \"status\": \"FINISHED\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Check message status",
+					"request": {
+						"url": "http://localhost:8080/message-scheduler/api/message/6/check/status",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"requester\": \"Usuário APT\",\n  \"dateTime\": \"2035-10-05 12:30:00\",\n  \"content\": \"aaa\",\n  \"resourceType\": \"SMS\",\n  \"status\": \"FINISHED\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Delete message",
+					"request": {
+						"url": "http://localhost:8080/message-scheduler/api/message/2/delete",
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Change message status",
+					"request": {
+						"url": "http://localhost:8080/message-scheduler/api/message/3/change/status/CANCELED",
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "requester",
+			"description": "",
+			"item": [
+				{
+					"name": "List requesters",
+					"request": {
+						"url": {
+							"raw": "http://localhost:8080/message-scheduler/api/requester/list?page=0",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"message-scheduler",
+								"api",
+								"requester",
+								"list"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"requester\": \"Usuário APT\",\n  \"dateTime\": \"2035-10-05 12:30:00\",\n  \"content\": \"aaa\",\n  \"resourceType\": \"SMS\",\n  \"status\": \"FINISHED\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "healthcheck",
+			"description": "",
+			"item": [
+				{
+					"name": "Check API status",
+					"request": {
+						"url": "http://localhost:8080/message-scheduler/api/message/6/check/status",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"requester\": \"Usuário APT\",\n  \"dateTime\": \"2035-10-05 12:30:00\",\n  \"content\": \"aaa\",\n  \"resourceType\": \"SMS\",\n  \"status\": \"FINISHED\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
