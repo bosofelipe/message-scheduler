@@ -1,6 +1,10 @@
 package com.luizalabs.domain;
 
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Data;
+import lombok.Builder;
 
 import javax.persistence.Id;
 import javax.persistence.Entity;
@@ -19,8 +23,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
+@Data
 @Builder
 public class Message {
 
@@ -45,5 +48,5 @@ public class Message {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private CommunicationType comunicationType;
+    private CommunicationType communicationType;
 }

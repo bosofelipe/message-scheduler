@@ -21,23 +21,22 @@ public class MessageMapperTest {
         Assertions.assertEquals("Novo produto importado", message.getContent());
         Assertions.assertNotNull(message.getDataTime());
         Assertions.assertEquals(MessageStatus.CANCELED, message.getStatus());
-        Assertions.assertEquals(CommunicationType.SMS, message.getComunicationType());
+        Assertions.assertEquals(CommunicationType.SMS, message.getCommunicationType());
     }
 
     @Test
     public void toMessageDTO(){
-        Requester requester = Requester.builder().id(1L).name("Requester 1").build();
         Message message = Message.builder().content("Carregamento para nova filial")
                 .requester(Requester.builder().id(1L).name("Gerente Loja 1").build())
                 .dataTime(LocalDateTime.now().plusDays(1))
                 .status(MessageStatus.FINISHED)
-                .comunicationType(CommunicationType.PUSH).build();
+                .communicationType(CommunicationType.PUSH).build();
         MessageDTO messageDTO = MessageMapper.toMessageDTO(message);
         Assertions.assertEquals("Gerente Loja 1", messageDTO.getRequester());
         Assertions.assertEquals("Carregamento para nova filial", message.getContent());
         Assertions.assertNotNull(message.getDataTime());
         Assertions.assertEquals(MessageStatus.FINISHED, message.getStatus());
-        Assertions.assertEquals(CommunicationType.PUSH, message.getComunicationType());
+        Assertions.assertEquals(CommunicationType.PUSH, message.getCommunicationType());
     }
 
 }

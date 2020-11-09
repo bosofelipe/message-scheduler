@@ -62,7 +62,7 @@ public class MessageService {
     }
 
     public MessageDTO change(Long messageId, MessageDTO messageDTO) {
-        Message message = messageRepository.findById(messageId)
+        messageRepository.findById(messageId)
                 .orElseThrow(() -> new MessageNotFoundException(messageId.toString()));
         Requester requester = findOrCreateRequester(messageDTO.getRequester());
 

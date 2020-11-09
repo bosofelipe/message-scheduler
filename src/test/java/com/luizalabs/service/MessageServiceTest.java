@@ -153,8 +153,6 @@ public class MessageServiceTest {
                 .id(1L)
                 .name("UsuarioXYZ").build();
 
-        Message message = MessageMapper.toMessage(newMessage, requester);
-
         Mockito.when(messageRepository.findByIdAndStatus(30L, MessageStatus.SCHEDULED)).thenReturn(Optional.empty());
 
         Throwable exceptionThatWasThrown = Assertions.assertThrows(MessageNotFoundException.class, () -> {

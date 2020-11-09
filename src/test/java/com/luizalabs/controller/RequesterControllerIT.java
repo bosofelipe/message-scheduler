@@ -39,18 +39,19 @@ public class RequesterControllerIT {
     private RequesterRepository requesterRepository;
 
     @BeforeEach
-    private void initData(){
+    public void initData(){
         createMessagesAndRequester();
     }
 
     @Test
     @Order(1)
+    @SuppressWarnings("unchecked")
     public void listRequesters() throws Exception {
         Map<String, Object> requesters = Objects.requireNonNull(
                 rest.exchange("/api/requester/list", HttpMethod.GET, null, new ParameterizedTypeReference<Map<String, Object>>() {
                 }).getBody());
 
-        List<Map<String, Object>> requestersResult = (List)requesters.get("requesters");
+        List<Map<String, Object>> requestersResult = (List<Map<String, Object>>)requesters.get("requesters");
         Assertions.assertEquals(requestersResult.get(0).get("name"), "Requester-101");
         Assertions.assertEquals(requestersResult.size(), 10);
         Assertions.assertEquals(requesters.get("totalPages"), 3);
@@ -60,12 +61,13 @@ public class RequesterControllerIT {
 
     @Test
     @Order(2)
+    @SuppressWarnings("unchecked")
     public void listRequestersPaging() throws Exception {
         Map<String, Object> requesters = Objects.requireNonNull(
                 rest.exchange("/api/requester/list?page=1", HttpMethod.GET, null, new ParameterizedTypeReference<Map<String, Object>>() {
                 }).getBody());
 
-        List<Map<String, Object>> requestersResult = (List)requesters.get("requesters");
+        List<Map<String, Object>> requestersResult = (List<Map<String, Object>>)requesters.get("requesters");
         Assertions.assertEquals(requestersResult.get(0).get("name"), "Requester-106");
         Assertions.assertEquals(requestersResult.size(), 10);
         Assertions.assertEquals(requesters.get("totalPages"), 3);
@@ -93,7 +95,7 @@ public class RequesterControllerIT {
     }
 
     @AfterEach
-    private void tearDown(){
+    public void tearDown(){
         messageRepository.deleteAll();
         requesterRepository.deleteAll();
     }

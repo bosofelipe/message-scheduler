@@ -115,13 +115,13 @@ public class MessageControllerIT {
 
         Assertions.assertEquals(updatedMessage.get().getContent(), "Alteração de cadastro");
         Assertions.assertEquals(updatedMessage.get().getStatus(), MessageStatus.FINISHED);
-        Assertions.assertEquals(updatedMessage.get().getComunicationType(), CommunicationType.EMAIL);
+        Assertions.assertEquals(updatedMessage.get().getCommunicationType(), CommunicationType.EMAIL);
         Assertions.assertEquals(updatedMessage.get().getRequester().getName(), "Novo");
         Assertions.assertNotNull(updatedMessage.get().getDataTime());
     }
 
     @Test
-    @Order(6)
+    @Order(7)
     public void checkMessageStatus() throws Exception {
         createMessagesAndRequester();
         List<Message> messages = messageRepository.findAll();
@@ -140,7 +140,7 @@ public class MessageControllerIT {
     }
 
     @Test
-    @Order(5)
+    @Order(8)
     public void deleteMessage() throws Exception {
         createMessagesAndRequester();
         Message messageToDelete = messageRepository.findAll().get(0);
@@ -182,7 +182,7 @@ public class MessageControllerIT {
     }
 
     @AfterEach
-    private void tearDown(){
+    public void tearDown(){
         messageRepository.deleteAll();
         requesterRepository.deleteAll();
     }

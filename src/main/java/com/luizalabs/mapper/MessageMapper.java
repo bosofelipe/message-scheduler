@@ -13,7 +13,7 @@ public class MessageMapper {
                 .requester(requester)
                 .content(messageDTO.getContent())
                 .dataTime(messageDTO.getDateTime())
-                .comunicationType(CommunicationType.valueOf(messageDTO.getCommunicationType()))
+                .communicationType(CommunicationType.valueOf(messageDTO.getCommunicationType()))
                 .status(MessageStatus.valueOf(messageDTO.getStatus())).build();
     }
 
@@ -23,7 +23,7 @@ public class MessageMapper {
                 .content(message.getContent())
                 .dateTime(message.getDataTime())
                 .id(message.getId())
-                .communicationType(message.getComunicationType().name())
+                .communicationType(message.getCommunicationType().name())
                 .status(message.getStatus().name()).build();
     }
 }
