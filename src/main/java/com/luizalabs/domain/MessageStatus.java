@@ -22,7 +22,7 @@ public enum MessageStatus {
     @JsonCreator
     public static MessageStatus find(String name) {
         return Arrays.asList(MessageStatus.values()).stream()
-                .filter(s -> s.getStatus().equals(name.toUpperCase())).findFirst()
+                .filter(s -> s.name.equalsIgnoreCase(name)).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(name));
     }
 }

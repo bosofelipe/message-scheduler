@@ -142,8 +142,19 @@ public class MessageServiceTest {
 
     @Test
     public void messageNotFoundOnChangeStatus(){
+        Mockito.when(messageRepository.findByIdAndStatus(30L, MessageStatus.SCHEDULED)).thenReturn(Optional.empty());
+
+        Throwable exceptionThatWasThrown = Assertions.assertThrows(MessageNotFoundException.class, () -> {
+            messageService.changeMessageStatus(30L, MessageStatus.FINISHED);
+        });
+        Assertions.assertEquals("Message with id: 30 not found!", exceptionThatWasThrown.getMessage());
+    }
+
+    @Test
+    public void changeMessageProperties(){
         LocalDateTime messageDate = LocalDateTime.now().plusDays(2);
-        MessageDTO newMessage = MessageDTO.builder().content("Aviso de recebimento de produto")
+        MessageDTO currentMessage = MessageDTO.builder()
+                .content("Aviso de recebimento de produto")
                 .dateTime(messageDate)
                 .status("SCHEDULED")
                 .requester("UsuarioXYZ").communicationType("EMAIL")
@@ -153,12 +164,42 @@ public class MessageServiceTest {
                 .id(1L)
                 .name("UsuarioXYZ").build();
 
-        Mockito.when(messageRepository.findByIdAndStatus(30L, MessageStatus.SCHEDULED)).thenReturn(Optional.empty());
+        Message message = MessageMapper.toMessage(currentMessage, requester);
+
+        Mockito.when(requesterRepository.findByName("UsuarioXYZ")).thenReturn(Optional.of(requester));
+        Mockito.when(messageRepository.findById(30L)).thenReturn(Optional.of(message));
+
+        MessageDTO newMessage = MessageDTO.builder().content("Confirmação produto recebido")
+                .dateTime(messageDate)
+                .status("FINISHED")
+                .requester("UsuarioXYZ")
+                .communicationType("EMAIL")
+                .build();
+
+        MessageDTO savedMessage = messageService.change(30L, newMessage);
+
+        Assertions.assertEquals(MessageStatus.FINISHED.name(), savedMessage.getStatus());
+        Assertions.assertEquals("Confirmação produto recebido", savedMessage.getContent());
+        Assertions.assertEquals(CommunicationType.EMAIL.name(), savedMessage.getCommunicationType());
+        Assertions.assertEquals("UsuarioXYZ", savedMessage.getRequester() );
+    }
+
+    @Test
+    public void errorOnChangeMessageNotFound(){
+        LocalDateTime messageDate = LocalDateTime.now().plusDays(2);
+        MessageDTO newMessage = MessageDTO.builder().content("Confirmação produto recebido")
+                .dateTime(messageDate)
+                .status("FINISHED")
+                .requester("UsuarioXYZ")
+                .communicationType("EMAIL")
+                .build();
+
+        Mockito.when(messageRepository.findById(30L)).thenReturn(Optional.empty());
 
         Throwable exceptionThatWasThrown = Assertions.assertThrows(MessageNotFoundException.class, () -> {
-            messageService.changeMessageStatus(30L, MessageStatus.FINISHED);
+            messageService.change(1000L, newMessage);
         });
-        Assertions.assertEquals("Message with id: 30 not found!", exceptionThatWasThrown.getMessage());
+        Assertions.assertEquals("Message with id: 1000 not found!", exceptionThatWasThrown.getMessage());
     }
 
     @Test
@@ -185,19 +226,6 @@ public class MessageServiceTest {
 
     @Test
     public void messageNotFoundOnDelete(){
-        LocalDateTime messageDate = LocalDateTime.now().plusDays(2);
-        MessageDTO newMessage = MessageDTO.builder().content("Aviso de recebimento de produto")
-                .dateTime(messageDate)
-                .status("SCHEDULED")
-                .requester("UsuarioXYZ").communicationType("EMAIL")
-                .build();
-
-        Requester requester = Requester.builder()
-                .id(1L)
-                .name("UsuarioXYZ").build();
-
-        Message message = MessageMapper.toMessage(newMessage, requester);
-
         Mockito.when(messageRepository.findByIdAndStatus(500L, MessageStatus.SCHEDULED)).thenReturn(Optional.empty());
 
         Throwable exceptionThatWasThrown = Assertions.assertThrows(MessageNotFoundException.class, () -> {
