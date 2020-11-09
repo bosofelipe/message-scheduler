@@ -37,6 +37,32 @@ test {
 	finalizedBy jacocoTestReport
 }
 
+def jacocoExclude = ['**/*Message.class', '**/*Requester.class', '**/*Builder.class']
+
 jacocoTestReport {
-	dependsOn test
+	afterEvaluate {
+		getClassDirectories().setFrom(classDirectories.files.collect {
+			fileTree(dir: it, exclude: jacocoExclude)
+		})
+	}
 }
+
+jacocoTestCoverageVerification {
+	afterEvaluate {
+		getClassDirectories().setFrom(classDirectories.files.collect {
+			fileTree(dir: it, exclude: jacocoExclude)
+		})
+	}
+	violationRules {
+		rule {
+			element = 'CLASS'
+			limit {
+				counter = 'INSTRUCTION'
+				value = 'COVEREDRATIO'
+				minimum = 0.8
+			}
+		}
+	}
+}
+
+check.dependsOn jacocoTestCoverageVerification
