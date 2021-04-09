@@ -43,4 +43,5 @@ API Java para agendamento de envio de mensagens
     *   [Docker](https://www.docker.com/) Para facilitar a instalação e inicialização da API, utilizando containers
 
 *   Licença
+
 [GNU AFFERO GENERAL PUBLIC LICENSE V3.0](https://github.com/bosofelipe/message-scheduler/blob/main/LICENSE)
